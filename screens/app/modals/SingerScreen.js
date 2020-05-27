@@ -1,3 +1,4 @@
+/* eslint-disable no-new-object */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -13,8 +14,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {ScrollView} from 'react-native-gesture-handler';
-import {getData} from '../../../services/helper';
+import {getData, storeStorage} from '../../../services/helper';
 import SongItem from '../../../components/SongItem';
+import trackService from '../../../services/PlayerServices';
 
 export default class SingerScreen extends Component {
   constructor(props) {
@@ -42,6 +44,25 @@ export default class SingerScreen extends Component {
     });
   }
 
+  getPlayList = () => {
+    return {
+      name: this.state.info.artistName,
+      list: this.state.info.songs.map(
+        (x) =>
+          new Object({
+            id: x.id,
+            alias: x.alias,
+            thumbnail: x.thumbnail,
+          }),
+      ),
+    };
+  };
+
+  async playRandom() {
+    await storeStorage('playlistOnline', this.getPlayList());
+    const {id, alias} = this.state.items[0];
+    trackService.playSongFromURL(id, alias, this.name);
+  }
   render() {
     return this.state.info ? (
       <View style={styles.container}>
@@ -88,7 +109,7 @@ export default class SingerScreen extends Component {
             {this.state.info.songs.map((song, index) => {
               return (
                 <TouchableOpacity key={index} style={styles.song}>
-                  <SongItem song={song} navigation={this.props.navigation} />
+                  <SongItem song={song} playList={this.getPlayList()} />
                 </TouchableOpacity>
               );
             })}

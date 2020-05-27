@@ -16,8 +16,8 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/Feather';
 import ArtistList from '../../components/ArtistList';
 import {YellowBox} from 'react-native';
-import {Provider, Subscribe} from 'unstated';
-import PlayListContainer from '../../containers/playlistContainer';
+import TrackBar from '../../components/TrackBar';
+import GLOBAL from '../../global.js';
 import {getStorage} from '../../services/helper';
 StatusBar.setBarStyle('dark-content', true);
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
@@ -73,6 +73,12 @@ export default class HomeScreen extends Component {
       popular_V: [],
     };
   }
+
+  async componentWillMount() {
+    GLOBAL.current_queue_name = await getStorage('queueName');
+    GLOBAL.current_list = (await getStorage('playlistOnline'))?.list || [];
+  }
+
   async componentDidMount() {
     // const data = await getStorage('playlistOnline');
     // if (data !== null) {
@@ -130,15 +136,15 @@ export default class HomeScreen extends Component {
 
   render() {
     return (
-      <Provider>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.StatusBar}>
-            <StatusBar
-              translucent
-              backgroundColor="white"
-              barStyle="dark-content"
-            />
-          </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.StatusBar}>
+          <StatusBar
+            translucent
+            backgroundColor="white"
+            barStyle="dark-content"
+          />
+        </View>
+        <View style={{flex: 1, paddingLeft: 24}}>
           <ScrollView>
             <View style={styles.topBar}>
               <Text style={styles.section}>Top 100</Text>
@@ -183,19 +189,12 @@ export default class HomeScreen extends Component {
                 <ActivityIndicator />
               )}
             </View>
-            <View>
-              <Subscribe to={[PlayListContainer]}>
-                {(playListContainer) => {
-                  console.log(playListContainer.state);
-                  return playListContainer.state.playlist.map((playlist) => (
-                    <Text>1 {playlist.alias}</Text>
-                  ));
-                }}
-              </Subscribe>
-            </View>
           </ScrollView>
-        </SafeAreaView>
-      </Provider>
+        </View>
+        <View>
+          <TrackBar />
+        </View>
+      </SafeAreaView>
     );
   }
 }
@@ -203,7 +202,7 @@ export default class HomeScreen extends Component {
 const styles = new StyleSheet.create({
   container: {
     flex: 1,
-    paddingLeft: 24,
+    // paddingLeft: 24,
     backgroundColor: '#fafafa',
   },
   StatusBar: {

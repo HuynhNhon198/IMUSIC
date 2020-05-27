@@ -2,8 +2,8 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import {Subscribe, Provider} from 'unstated';
-import PlayListContainer from '../containers/playlistContainer';
+import {storeStorage} from '../services/helper';
+import trackService from '../services/PlayerServices';
 
 export default class SongItem extends Component {
   constructor(props) {
@@ -12,10 +12,13 @@ export default class SongItem extends Component {
   }
 
   playlist = this.props.playList;
-  openSong = (id, alias) => {
-    this.props.navigation.navigate('PlayOnline', {
-      url: `https://echo.brandly.vn/api/media/song?name=${alias}&id=${id}`,
-    });
+  openSong = async (id, alias) => {
+    await storeStorage('playlistOnline', this.props.playList);
+    trackService.playSongFromURL(id, alias, this.props.playList.name);
+    // await storeStorage('currentSong', {id, alias}, this.props.navigation);
+    // this.props.navigation.navigate('PlayOnline', {
+    //   url: `https://echo.brandly.vn/api/media/song?name=${alias}&id=${id}`,
+    // });
   };
 
   handleClick = (setPlayList) => {
@@ -38,32 +41,23 @@ export default class SongItem extends Component {
           source={song.thumbnail}
         />
         <View style={styles.songInfo}>
-          <Provider>
-            <Subscribe to={[PlayListContainer]}>
-              {(playListContainer) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    this.handleClick(playListContainer.setPlayList)
-                  }>
-                  <Text
-                    style={{
-                      width: 200,
-                      fontFamily: 'barlow-semibold',
-                      fontSize: 20,
-                      marginBottom: 5,
-                      color: '#474747',
-                    }}
-                    numberOfLines={1}
-                    ellipsizeMode="tail">
-                    {song.title}
-                  </Text>
-                  <Text style={{color: '#7c7c7c'}}>
-                    {song.artists_names || song.artist_text}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </Subscribe>
-          </Provider>
+          <TouchableOpacity onPress={() => this.openSong(song.id, song.alias)}>
+            <Text
+              style={{
+                width: 200,
+                fontFamily: 'barlow-semibold',
+                fontSize: 20,
+                marginBottom: 5,
+                color: '#474747',
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail">
+              {song.title}
+            </Text>
+            <Text style={{color: '#7c7c7c'}}>
+              {song.artists_names || song.artist_text}
+            </Text>
+          </TouchableOpacity>
           <Icon
             name="heart"
             size={20}

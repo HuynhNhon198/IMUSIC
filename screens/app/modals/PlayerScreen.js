@@ -2,74 +2,29 @@
 import React, {Component} from 'react';
 import {
   View,
-  Text,
-  TouchableOpacity,
   StyleSheet,
   StatusBar,
   ImageBackground,
   ActivityIndicator,
   Platform,
-  Image,
   ScrollView,
   Animated,
   Easing,
+  TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import TrackPlayer, {usePlaybackState} from 'react-native-track-player';
-import {getData, getStorage} from '../../../services/helper';
+import TrackPlayer from 'react-native-track-player';
 import PlayerBar from '../../../components/PlayerBar';
-import playlistData from '../../../playlist.json';
+import GLOBAL from '../../../global.js';
 // import PlayListContainer from '../../../containers/playlistContainer';
 export default class PlayerScreen extends Component {
   constructor(props) {
     super(props);
     this.RotateValueHolder = new Animated.Value(0);
-    this.state = {
-      song: undefined,
-      duration: 0,
-    };
   }
-
-  url = this.props.navigation.state.params.url;
-  // playbackState = usePlaybackState();
-
-  componentDidMount() {
+  // slide = new SlidingUpPanel();
+  async componentDidMount() {
     this.StartImageRotateFunction();
-    getData(this.url).then(async (data) => {
-      if (data.data) {
-        this.setState({song: data.data});
-        const info = this.state.song;
-        if (info.streaming.default) {
-          // playSound('https:' + data.data.streaming.default['128'], true);
-          // const playlist = await getStorage('playlistOnline');
-          await TrackPlayer.reset();
-          // PlayListContainer.setPlayList(playlist);
-          // console.log(playlistData);
-          // await TrackPlayer.add(playlistData);
-          await TrackPlayer.add({
-            id: info.id,
-            url: 'https:' + info.streaming.default['128'],
-            title: info.title,
-            artist: info.artists_names,
-            artwork: info.thumbnail_medium,
-            duration: info.duration,
-          });
-          await TrackPlayer.play();
-
-          let duration = 0;
-          var timer = setInterval(() => {
-            this.durationCount(duration);
-            duration++;
-            if (duration === 1000) {
-              clearInterval(timer);
-            }
-          }, 1000);
-        } else {
-          alert('Bài hát này chỉ cho tài khoản VIP');
-          this.props.navigation.goBack();
-        }
-      }
-    });
   }
 
   StartImageRotateFunction() {
@@ -86,37 +41,28 @@ export default class PlayerScreen extends Component {
     this.setState({duration: current / 100});
   }
   render() {
-    const song = this.state.song;
+    const song = this.props.song;
     const RotateData = this.RotateValueHolder.interpolate({
       inputRange: [0, 1],
       outputRange: ['0deg', '360deg'],
     });
     return song ? (
       <View style={styles.container}>
-        <StatusBar
-          translucent
-          backgroundColor="transparent"
-          barStyle="light-content"
-        />
         <ImageBackground
           style={{height: 300}}
-          source={{uri: song.thumbnail_medium}}
+          source={{uri: song.artwork}}
           blurRadius={Platform.OS === 'ios' ? 6 : 3}>
           <View style={styles.menuBar}>
-            <View
+            <TouchableOpacity
+              onPress={() => this.props.hideMethod}
               style={{
                 backgroundColor: 'rgba(0, 15, 20, 0.52)',
                 paddingHorizontal: 20,
                 paddingVertical: 3,
                 borderRadius: 25,
               }}>
-              <Icon
-                style={{color: '#FFF'}}
-                name="chevron-down"
-                size={25}
-                onPress={() => this.props.navigation.goBack()}
-              />
-            </View>
+              <Icon style={{color: '#FFF'}} name="chevron-down" size={25} />
+            </TouchableOpacity>
           </View>
         </ImageBackground>
         <View style={styles.content}>
@@ -133,10 +79,10 @@ export default class PlayerScreen extends Component {
               borderColor: 'rgba(254, 254, 254, 0.24)',
               transform: [{rotate: RotateData}],
             }}
-            source={{uri: song.thumbnail_medium}}
+            source={{uri: song.artwork}}
           />
           <ScrollView />
-          <PlayerBar song={song} />
+          <PlayerBar typeName={GLOBAL.current_queue_name} song={song} />
         </View>
       </View>
     ) : (
@@ -151,6 +97,7 @@ export default class PlayerScreen extends Component {
 const styles = new StyleSheet.create({
   container: {
     flex: 1,
+    // marginTop: -25,
   },
   menuBar: {
     flexDirection: 'row',

@@ -23,7 +23,7 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-TrackPlayer.getInstance();
+// TrackPlayer.getInstance();
 const AppContainer = createStackNavigator(
   {
     default: createBottomTabNavigator(

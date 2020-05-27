@@ -15,6 +15,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import {getData, storeStorage} from '../../../services/helper';
 import SongItem from '../../../components/SongItem';
+import trackService from '../../../services/PlayerServices';
 export default class Top100Screen extends Component {
   constructor(props) {
     super(props);
@@ -59,7 +60,7 @@ export default class Top100Screen extends Component {
 
   getPlayList = () => {
     return {
-      name: 'playlistOnline',
+      name: this.name,
       list: this.state.items.map(
         (x) =>
           new Object({
@@ -72,15 +73,10 @@ export default class Top100Screen extends Component {
   };
 
   async playRandom() {
-    await storeStorage('playlistOnline', this.getPlayList().list);
+    await storeStorage('playlistOnline', this.getPlayList());
     const {id, alias} = this.state.items[0];
-    this.openSong(id, alias);
+    trackService.playSongFromURL(id, alias, this.name);
   }
-  openSong = (id, alias) => {
-    this.props.navigation.navigate('PlayOnline', {
-      url: `https://echo.brandly.vn/api/media/song?name=${alias}&id=${id}`,
-    });
-  };
 
   componentWillUnmount() {
     // StatusBar.setBarStyle('dark-content', true);
@@ -122,11 +118,7 @@ export default class Top100Screen extends Component {
               return (
                 <View key={index} style={styles.song}>
                   <Text style={styles.index}>{index + 1}</Text>
-                  <SongItem
-                    song={song}
-                    navigation={this.props.navigation}
-                    playList={this.getPlayList()}
-                  />
+                  <SongItem song={song} playList={this.getPlayList()} />
                 </View>
               );
             })}
