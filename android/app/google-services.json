@@ -1,0 +1,101 @@
+{
+  "project_info": {
+    "project_number": "136005534027",
+    "firebase_url": "https://btl-mobile-app.firebaseio.com",
+    "project_id": "btl-mobile-app",
+    "storage_bucket": "btl-mobile-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136005534027:android:dfed207a17e3f1a858a8ce",
+        "android_client_info": {
+          "package_name": "com.imusicv1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136005534027-jmhbirbfe13d0nvv6vo1qtv5f5q2qonv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imusicv1",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "136005534027-f7pfcja68uov748h62rm9ad15al8hb00.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1i8d7lmdEkdsHfq_CHmpy_cQvwW71nns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136005534027-f7pfcja68uov748h62rm9ad15al8hb00.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "136005534027-pmph8t76l82k2jk0qg290e8q137102n9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "imusic",
+                "app_store_id": "12011710"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:136005534027:android:8e449dc54f22ac2158a8ce",
+        "android_client_info": {
+          "package_name": "com.imusicv2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "136005534027-l451isa73fs29i7scqfrprjqjfmn6o8q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imusicv2",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "136005534027-f7pfcja68uov748h62rm9ad15al8hb00.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1i8d7lmdEkdsHfq_CHmpy_cQvwW71nns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "136005534027-f7pfcja68uov748h62rm9ad15al8hb00.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "136005534027-pmph8t76l82k2jk0qg290e8q137102n9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "imusic",
+                "app_store_id": "12011710"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
