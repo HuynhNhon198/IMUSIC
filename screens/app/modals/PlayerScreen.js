@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import {
   View,
   StyleSheet,
-  StatusBar,
   ImageBackground,
   ActivityIndicator,
   Platform,
@@ -13,9 +12,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import TrackPlayer from 'react-native-track-player';
-import PlayerBar from '../../../components/PlayerBar';
 import GLOBAL from '../../../global.js';
+import ActionPlayerbar from '../../../components/ActionPlayerbar';
 // import PlayListContainer from '../../../containers/playlistContainer';
 export default class PlayerScreen extends Component {
   constructor(props) {
@@ -27,11 +25,15 @@ export default class PlayerScreen extends Component {
     this.StartImageRotateFunction();
   }
 
+  handleHide() {
+    this.props.hideMethod();
+  }
+
   StartImageRotateFunction() {
     this.RotateValueHolder.setValue(0);
     Animated.timing(this.RotateValueHolder, {
       toValue: 1,
-      duration: 6000,
+      duration: 8000,
       useNativeDriver: true,
       easing: Easing.linear,
     }).start(() => this.StartImageRotateFunction());
@@ -54,7 +56,7 @@ export default class PlayerScreen extends Component {
           blurRadius={Platform.OS === 'ios' ? 6 : 3}>
           <View style={styles.menuBar}>
             <TouchableOpacity
-              onPress={() => this.props.hideMethod}
+              onPress={() => this.handleHide()}
               style={{
                 backgroundColor: 'rgba(0, 15, 20, 0.52)',
                 paddingHorizontal: 20,
@@ -82,7 +84,8 @@ export default class PlayerScreen extends Component {
             source={{uri: song.artwork}}
           />
           <ScrollView />
-          <PlayerBar typeName={GLOBAL.current_queue_name} song={song} />
+          <ActionPlayerbar typeName={GLOBAL.current_queue_name} song={song} />
+          {/* <PlayerBar typeName={GLOBAL.current_queue_name} song={song} /> */}
         </View>
       </View>
     ) : (
@@ -97,7 +100,7 @@ export default class PlayerScreen extends Component {
 const styles = new StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: -25,
+    // marginTop: -16,
   },
   menuBar: {
     flexDirection: 'row',

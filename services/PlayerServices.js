@@ -109,7 +109,6 @@ class TrackService {
   async saveNextToQueue(current_id, typeName) {
     const ind = GLOBAL.current_list.findIndex((x) => x.id === current_id);
     const next = GLOBAL.current_list[ind + 1];
-    console.log('next', next);
     if (next) {
       const check = await this.checkSongInQueue(next.id);
       if (!check) {

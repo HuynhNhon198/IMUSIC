@@ -7,6 +7,9 @@ import {
   StyleSheet,
   Image,
   Dimensions,
+  Animated,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import {getStorage, storeStorage} from '../services/helper';
 import SlidingUpPanel from 'rn-sliding-up-panel';
@@ -19,8 +22,20 @@ import ProgressBarComponent from './Progress';
 export default class TrackBar extends Component {
   constructor(props) {
     super(props);
+    this.height =
+      Platform.OS !== 'ios' &&
+      Dimensions.get('screen').height !== Dimensions.get('window').height &&
+      StatusBar.currentHeight > 24
+        ? Dimensions.get('screen').height - StatusBar.currentHeight
+        : Dimensions.get('window').height;
+    this.draggableRange = {
+      top: Dimensions.get('window').height - 30,
+      bottom: 0,
+    };
+    this.animatedValue = new Animated.Value(this.draggableRange.bottom);
     this.state = {
       current_song: undefined,
+      px: -13,
     };
     getStorage('currentSong').then((current) => {
       if (current) {
@@ -30,12 +45,23 @@ export default class TrackBar extends Component {
   }
 
   async componentDidMount() {
+    this.animte = this.animatedValue.addListener(({value}) => {
+      if (value === this.draggableRange.top) {
+        // At top position
+        this.setState({px: 13});
+      }
+
+      if (value === this.draggableRange.bottom) {
+        this.setState({px: -13});
+        // At bottom position
+      }
+    });
+
     this.onTrackChange = TrackPlayer.addEventListener(
       'playback-track-changed',
       async (data) => {
         const track = await TrackPlayer.getTrack(data.nextTrack);
         if (track !== null) {
-          console.log(track);
           trackService.saveNextToQueue(track.id, current_queue_name);
           storeStorage('currentSong', track);
           this.setState({current_song: track});
@@ -50,10 +76,11 @@ export default class TrackBar extends Component {
     this.onTrackChange.remove();
   }
 
+  hideMethod = () => {};
   render() {
     const song = this.state.current_song;
     return song ? (
-      <View>
+      <View style={{marginBottom: 0}}>
         <TouchableOpacity
           style={styles.track}
           onPress={() => this._panel.show()}>
@@ -87,8 +114,12 @@ export default class TrackBar extends Component {
           /> */}
           <ProgressBarComponent />
         </View>
-        <SlidingUpPanel ref={(c) => (this._panel = c)}>
-          <PlayerScreen song={song} hide={this.hideMethod} />
+        <SlidingUpPanel
+          animatedValue={this.animatedValue}
+          draggableRange={this.draggableRange}
+          showBackdrop={false}
+          ref={(c) => (this._panel = c)}>
+          <PlayerScreen song={song} hideMethod={() => this._panel.hide()} />
         </SlidingUpPanel>
       </View>
     ) : (
