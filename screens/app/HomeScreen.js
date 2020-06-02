@@ -1,3 +1,4 @@
+/* eslint-disable react/no-string-refs */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -19,6 +20,9 @@ import {YellowBox} from 'react-native';
 import TrackBar from '../../components/TrackBar';
 import GLOBAL from '../../global.js';
 import {getStorage} from '../../services/helper';
+import Modal from 'react-native-modalbox';
+import SearchBox from '../../components/SearchBox';
+
 StatusBar.setBarStyle('dark-content', true);
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 export default class HomeScreen extends Component {
@@ -74,8 +78,9 @@ export default class HomeScreen extends Component {
     };
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     GLOBAL.current_queue_name = await getStorage('queueName');
+    GLOBAL.current_song = await getStorage('currentSong');
     GLOBAL.current_list = (await getStorage('playlistOnline'))?.list || [];
   }
 
@@ -134,6 +139,9 @@ export default class HomeScreen extends Component {
     );
   };
 
+  hideSearch = () => {
+    this.refs.modal6.close();
+  };
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -148,9 +156,9 @@ export default class HomeScreen extends Component {
           <ScrollView>
             <View style={styles.topBar}>
               <Text style={styles.section}>Top 100</Text>
-              {/* <TouchableOpacity> */}
-              <Icon name="search" size={24} />
-              {/* </TouchableOpacity> */}
+              <TouchableOpacity onPress={() => this.refs.modal6.open()}>
+                <Icon name="search" size={24} />
+              </TouchableOpacity>
             </View>
             <View>
               <FlatList
@@ -194,6 +202,14 @@ export default class HomeScreen extends Component {
         <View>
           <TrackBar />
         </View>
+        <Modal
+          style={[styles.modal]}
+          position={'bottom'}
+          ref={'modal6'}
+          swipeArea={100}
+          backdropOpacity={0.7}>
+          <SearchBox hideMethod={() => this.hideSearch()} />
+        </Modal>
       </SafeAreaView>
     );
   }
@@ -247,5 +263,14 @@ const styles = new StyleSheet.create({
     margin: 8,
     width: 160,
     height: 100,
+  },
+  modal: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: '90.5%',
+    padding: 5,
+    backgroundColor: '#FAFAFA',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
 });

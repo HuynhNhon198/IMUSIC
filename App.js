@@ -4,8 +4,12 @@ import {View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
+import GLOBAL from './global.js';
 
-import * as firebase from 'firebase';
+// import * as firebase from 'firebase';
+// import 'firebase/firestore';
+import firebase from '@react-native-firebase/app';
+import auth from '@react-native-firebase/auth';
 import HomeScreen from './screens/app/HomeScreen';
 import ProfileScreen from './screens/app/ProfileScreen';
 import Top100Screen from './screens/app/modals/Top100Screen';
@@ -13,16 +17,32 @@ import SingerScreen from './screens/app/modals/SingerScreen';
 import PlayerScreen from './screens/app/modals/PlayerScreen';
 import LoginScreen from './screens/auth/LoginScreen';
 import LoadingScreen from './screens/LoadingScreen';
-import TrackPlayer from './services/TrackPlayer';
+
 import PLaylistScreen from './screens/app/modals/PLaylistScreen';
+import MyLocalSong from './screens/app/modals/MyLocalSong';
+import YoutubeMp3 from './screens/app/modals/YoutubeMp3';
+import Favorites from './screens/app/modals/Favorites.js';
 
 var firebaseConfig = {
   apiKey: 'AIzaSyB0PR3_Z-1jInWRanOGr5XYkf5BdvbYFag',
   authDomain: 'btl-mobile-app.firebaseapp.com',
+  projectId: 'btl-mobile-app',
+  appId: '1:136005534027:web:1ef9cdfd9f46891358a8ce',
+  databaseURL: 'https://btl-mobile-app.firebaseio.com',
+  messagingSenderId: '136005534027',
+  // storageBucket: 'btl-mobile-app.appspot.com',
 };
-// Initialize Firebase
+// // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
+// firebase.firestore().settings({experimentalForceLongPolling: true});
+// auth().onAuthStateChanged(async (user) => {
+//   if (user && user !== null) {
+//     console.log(user);
+//     // GLOBAL.user = (
+//     //   await firebase.firestore().collection('users').doc(user.uid).get()
+//     // ).data();
+//   }
+// });
 // TrackPlayer.getInstance();
 const AppContainer = createStackNavigator(
   {
@@ -32,7 +52,7 @@ const AppContainer = createStackNavigator(
           screen: HomeScreen,
           navigationOptions: {
             tabBarIcon: ({tintColor}) => (
-              <Icon name="home" size={25} color={tintColor} />
+              <Icon name="music" size={25} color={tintColor} />
             ),
             headerShown: false,
           },
@@ -52,7 +72,7 @@ const AppContainer = createStackNavigator(
           screen: ProfileScreen,
           navigationOptions: {
             tabBarIcon: ({tintColor}) => (
-              <Icon name="user" size={26} color={tintColor} />
+              <Icon name="user" size={25} color={tintColor} />
             ),
             headerShown: false,
           },
@@ -80,6 +100,15 @@ const AppContainer = createStackNavigator(
     },
     Playlist: {
       screen: PLaylistScreen,
+    },
+    MyLocalSong: {
+      screen: MyLocalSong,
+    },
+    YtbMp3: {
+      screen: YoutubeMp3,
+    },
+    Favorites: {
+      screen: Favorites,
     },
   },
   {

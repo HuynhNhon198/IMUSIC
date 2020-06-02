@@ -27,7 +27,6 @@ module.exports = async function () {
   });
 
   TrackPlayer.addEventListener('remote-stop', () => {
-    console.log('pppp');
     TrackPlayer.destroy();
   });
 };

@@ -4,8 +4,9 @@ import TrackPlayer from 'react-native-track-player';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import trackService from '../services/PlayerServices';
-import {current_queue_name} from '../global.js';
+import GLOBAL, {current_queue_name} from '../global.js';
 import ProgressBarComponent from './Progress';
+import firestoreService from '../services/FirestoreService';
 
 export default class ActionPlayerbar extends Component {
   constructor(props) {
@@ -13,6 +14,10 @@ export default class ActionPlayerbar extends Component {
     this.state = {
       status: undefined,
       icon: 'play',
+      repeat: false,
+      like: GLOBAL.user.favorite_songs.find((x) => x.id === this.props.song.id)
+        ? true
+        : false,
     };
   }
 
@@ -37,10 +42,43 @@ export default class ActionPlayerbar extends Component {
       this.setState({status: data.state, icon: icon});
     });
   }
-
+  convertToTimeView(sec) {
+    const quotient = Math.floor(sec / 60);
+    const remainder = sec % 60;
+    const newRemainder = remainder < 10 ? '0' + remainder : remainder;
+    return `${quotient}:${newRemainder}`;
+  }
   componentWillUnmount() {
     this.listener.remove();
   }
+
+  toogleLike = async () => {
+    const status = this.state.like;
+    if (status) {
+      const i = GLOBAL.user.favorite_songs.findIndex(
+        (x) => x.id === this.props.song.id,
+      );
+      GLOBAL.user.favorite_songs.splice(i, 1);
+    } else {
+      const {id, alias, artwork, artist, title} = this.props.song;
+      GLOBAL.user.favorite_songs.push({title, id, alias, artwork, artist});
+    }
+    await firestoreService.saveFavorites(GLOBAL.user.favorite_songs);
+    this.setState({like: !status});
+  };
+
+  componentDidUpdate(previousProps, previousState) {
+    if (previousProps.song !== this.props.song) {
+      this.setState({
+        like: GLOBAL.user.favorite_songs.find(
+          (x) => x.id === this.props.song.id,
+        )
+          ? true
+          : false,
+      });
+    }
+  }
+
   render() {
     const song = this.props.song;
     const icon = this.state.icon;
@@ -53,10 +91,17 @@ export default class ActionPlayerbar extends Component {
               {song.title}
             </Text>
           </View>
-          <Icon style={{alignSelf: 'center'}} name="heart" size={25} />
+          <TouchableOpacity onPress={() => this.toogleLike()}>
+            <Icon
+              style={{alignSelf: 'center'}}
+              name="heart"
+              color={this.state.like ? '#e9446a' : '#7c7c7c'}
+              size={25}
+            />
+          </TouchableOpacity>
         </View>
         <View style={{padding: 20}}>
-          <ProgressBarComponent />
+          <ProgressBarComponent total={song.duration} showSecond={true} />
         </View>
         <View
           style={{
@@ -64,11 +109,23 @@ export default class ActionPlayerbar extends Component {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginHorizontal: 20,
-          }}>
-          <Text style={styles.duration}>0:00</Text>
-          <Text style={styles.duration}>4:20</Text>
-        </View>
+          }}
+        />
         <View style={styles.actionBar}>
+          <TouchableOpacity
+            style={[styles.buttonAction]}
+            onPress={() => {
+              this.setState({repeat: !this.state.repeat}, () => {
+                GLOBAL.repeat = this.state.repeat;
+                GLOBAL.track_repeat = song.id;
+              });
+            }}>
+            <Icon
+              name="repeat"
+              size={20}
+              color={this.state.repeat ? '#e9446a' : '#000'}
+            />
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buttonSkip]}
             onPress={() => trackService.actionTrack('previous')}>
@@ -90,6 +147,11 @@ export default class ActionPlayerbar extends Component {
             onPress={() => trackService.actionTrack('next')}>
             <Icon name="skip-forward" size={25} />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.buttonAction]}
+            onPress={() => trackService.actionTrack('previous')}>
+            <Icon name="list" size={23} />
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -100,7 +162,7 @@ const styles = new StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   buttonPause: {
     alignItems: 'center',
@@ -118,12 +180,9 @@ const styles = new StyleSheet.create({
     height: 40,
     backgroundColor: '#FFF',
     borderRadius: 40,
-    marginHorizontal: 50,
+    marginHorizontal: 35,
   },
-  duration: {
-    fontFamily: 'barlow-medium',
-    color: 'rgb(97, 97, 97)',
-  },
+
   titleArea: {
     marginHorizontal: 20,
     flexDirection: 'row',

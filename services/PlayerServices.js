@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import TrackPlayer, {usePlaybackState} from 'react-native-track-player';
 import {getStorage, storeStorage, getData} from './helper';
 import GLOBAL from '../global.js';
@@ -22,13 +23,17 @@ class TrackService {
   async playSongFromURL(id, alias, typeName) {
     const re = await this.PlaySongInQueue(id, typeName);
     if (!re) {
-      let song = await this.getSongFromServer(id, alias).catch(() => 'error');
-      song = this.getInfoOfServerToSave(song);
-      await this.addSongToQueue(song, typeName);
-      await this.PlaySongInQueue(id, typeName);
-      await this.saveNextToQueue(id, typeName);
+      let song = await this.getSongFromServer(id, alias);
+      if (song) {
+        song = this.getInfoOfServerToSave(song);
+        await this.addSongToQueue(song, typeName);
+        await this.PlaySongInQueue(id, typeName, 1);
+        await this.saveNextToQueue(id, typeName, 1);
+      } else {
+        alert('Bạn phải là thành viên VIP mới nghe được bài này');
+      }
     }
-    await this.saveNextToQueue(id, typeName);
+    await this.saveNextToQueue(id, typeName, 1);
   }
 
   async getQueue() {
@@ -44,7 +49,7 @@ class TrackService {
           if (info.streaming.default) {
             r(info);
           } else {
-            j();
+            r(null);
           }
         }
       });
@@ -102,25 +107,29 @@ class TrackService {
       artist: song.artists_names,
       artwork: song.thumbnail_medium,
       duration: song.duration,
+      alias: song.alias,
     };
   }
 
   current_idi = '';
-  async saveNextToQueue(current_id, typeName) {
+  inG = 1;
+  async saveNextToQueue(current_id, typeName, i) {
+    this.current_idi = current_id;
     const ind = GLOBAL.current_list.findIndex((x) => x.id === current_id);
-    const next = GLOBAL.current_list[ind + 1];
+    const next = GLOBAL.current_list[ind + (i ? i : 1)];
     if (next) {
       const check = await this.checkSongInQueue(next.id);
       if (!check) {
-        let song = await this.getSongFromServer(next.id, next.alias).catch(
-          async () => {
-            this.current_id = next.id;
-            await this.saveNextToQueue(this.current_idi, typeName);
-          },
-        );
-        song = this.getInfoOfServerToSave(song);
-        await this.addSongToQueue(song, typeName);
-        return true;
+        let song = await this.getSongFromServer(next.id, next.alias);
+        if (song) {
+          song = this.getInfoOfServerToSave(song);
+          await this.addSongToQueue(song, typeName);
+          this.inG = 1;
+          return true;
+        } else if (song === null) {
+          this.inG += 1;
+          await this.saveNextToQueue(current_id, typeName, this.inG);
+        }
       }
     }
     return;
@@ -169,13 +178,20 @@ class TrackService {
   }
 
   async actionTrack(action) {
+    // const id = GLOBAL.current_song.id || '';
+    // const typeName = GLOBAL.current_queue_name;
     try {
       switch (action) {
         case 'next':
-          await TrackPlayer.skipToNext();
+          try {
+            await TrackPlayer.skipToNext();
+            // await this.saveNextToQueue(id, typeName, 1);
+          } catch (error) {}
           break;
         case 'previous':
-          await TrackPlayer.skipToPrevious();
+          try {
+            await TrackPlayer.skipToPrevious();
+          } catch (error) {}
           break;
 
         default:

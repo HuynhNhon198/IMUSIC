@@ -207,7 +207,7 @@ const styles = new StyleSheet.create({
 
   song: {
     flexDirection: 'row',
-    marginBottom: 20,
+    marginBottom: 3,
     backgroundColor: '#FFF',
     padding: 5,
     borderRadius: 6,

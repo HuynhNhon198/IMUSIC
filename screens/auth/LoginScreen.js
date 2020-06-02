@@ -2,11 +2,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, StatusBar, ImageBackground} from 'react-native';
-import * as firebase from 'firebase';
+import auth from '@react-native-firebase/auth';
 import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {GoogleSignin} from '@react-native-community/google-signin';
-
+import firestore from '@react-native-firebase/firestore';
 GoogleSignin.configure({
   webClientId:
     '136005534027-f7pfcja68uov748h62rm9ad15al8hb00.apps.googleusercontent.com',
@@ -25,8 +25,7 @@ export default class LoginScreen extends Component {
 
   handleLogin = () => {
     const {email, password} = this.state;
-    firebase
-      .auth()
+    auth()
       .signInWithEmailAndPassword(email, password)
       .catch((err) => {
         alert(err.message);
@@ -36,12 +35,23 @@ export default class LoginScreen extends Component {
   googleSignInHandle = async () => {
     const {idToken} = await GoogleSignin.signIn();
     // Create a Google credential with the token
-    const googleCredential = firebase.auth.GoogleAuthProvider.credential(
-      idToken,
-    );
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
 
     // Sign-in the user with the credential
-    return firebase.auth().signInWithCredential(googleCredential);
+    const user = await auth().signInWithCredential(googleCredential);
+
+    const {uid, displayName, photoURL, email} = user.user;
+    firestore().collection('users').doc(user.user.uid).set(
+      {
+        uid,
+        displayName,
+        photoURL,
+        email,
+      },
+      {
+        merge: true,
+      },
+    );
   };
 
   render() {

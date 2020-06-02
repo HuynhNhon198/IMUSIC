@@ -17,7 +17,7 @@ import PlayerScreen from '../screens/app/modals/PlayerScreen';
 
 import TrackPlayer from 'react-native-track-player';
 import trackService from '../services/PlayerServices';
-import {current_queue_name} from '../global.js';
+import GLOBAL, {current_queue_name} from '../global.js';
 import ProgressBarComponent from './Progress';
 export default class TrackBar extends Component {
   constructor(props) {
@@ -62,9 +62,16 @@ export default class TrackBar extends Component {
       async (data) => {
         const track = await TrackPlayer.getTrack(data.nextTrack);
         if (track !== null) {
-          trackService.saveNextToQueue(track.id, current_queue_name);
-          storeStorage('currentSong', track);
-          this.setState({current_song: track});
+          if (GLOBAL.repeat) {
+            if (GLOBAL.track_repeat !== data.nextTrack) {
+              await TrackPlayer.skip(GLOBAL.track_repeat);
+              await TrackPlayer.play();
+            }
+          } else {
+            trackService.saveNextToQueue(track.id, current_queue_name, 1);
+            storeStorage('currentSong', track);
+            this.setState({current_song: track});
+          }
         } else {
         }
       },
@@ -80,7 +87,7 @@ export default class TrackBar extends Component {
   render() {
     const song = this.state.current_song;
     return song ? (
-      <View style={{marginBottom: 0}}>
+      <View>
         <TouchableOpacity
           style={styles.track}
           onPress={() => this._panel.show()}>
@@ -132,7 +139,7 @@ const styles = new StyleSheet.create({
   track: {
     flexDirection: 'row',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingTop: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FFF',

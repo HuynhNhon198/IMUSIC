@@ -104,7 +104,7 @@ const styles = new StyleSheet.create({
   },
   menuBar: {
     flexDirection: 'row',
-    marginVertical: 50,
+    marginVertical: 35,
     marginHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',

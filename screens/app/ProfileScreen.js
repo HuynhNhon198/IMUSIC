@@ -12,8 +12,9 @@ import {
   ImageBackground,
   Platform,
 } from 'react-native';
-import * as firebase from 'firebase';
+import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
+import GLOBAL from '../../global.js';
 
 import Icon from 'react-native-vector-icons/Feather';
 export default class ProfileScreen extends Component {
@@ -31,9 +32,13 @@ export default class ProfileScreen extends Component {
   actionOnOption(item) {
     switch (item.id) {
       case '1':
-        this.props.navigation.navigate('MyMusic');
+        this.props.navigation.navigate('MyLocalSong');
         break;
       case '2':
+        this.props.navigation.navigate('Favorites');
+        break;
+      case '4':
+        this.props.navigation.navigate('YtbMp3');
         break;
       case '7':
         this.signOut();
@@ -52,7 +57,7 @@ export default class ProfileScreen extends Component {
     },
     {
       id: '2',
-      name: 'Nhạc yêu thích',
+      name: 'Yêu thích',
       icon: 'heart',
     },
     {
@@ -85,9 +90,9 @@ export default class ProfileScreen extends Component {
   componentDidMount() {
     this._isMounted = true;
     if (this._isMounted) {
-      firebase.auth().onAuthStateChanged((user) => {
+      auth().onAuthStateChanged(async (user) => {
         if (user) {
-          const {email, displayName, photoURL} = user;
+          const {email, displayName, photoURL} = GLOBAL.user;
           this.setState({email, displayName, photoURL});
         }
       });
@@ -99,7 +104,7 @@ export default class ProfileScreen extends Component {
   }
 
   signOut = () => {
-    firebase.auth().signOut();
+    auth().signOut();
     GoogleSignin.signOut();
   };
 

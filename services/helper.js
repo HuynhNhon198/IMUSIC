@@ -1,13 +1,13 @@
-/* eslint-disable no-alert */
+// /* eslint-disable no-alert */
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import GLOBAL from '../global.js';
+
 export async function getData(url) {
   const data = await axios.get(url).catch((err) => {
-    console.log(err);
-    alert(err);
+    // alert(err);
   });
-  return data.data;
+  return data?.data || undefined;
 }
 
 export async function createMiliSec() {
@@ -23,23 +23,23 @@ export async function storeStorage(key, value) {
           GLOBAL.current_list = value.list;
         }
         break;
+      case 'currentSong':
+        GLOBAL.current_song = value;
+        break;
       default:
         break;
     }
     await AsyncStorage.setItem(key, jsonValue);
   } catch (e) {
     // saving error
-    console.log(e);
   }
 }
 
 export async function getStorage(key) {
   try {
     const jsonValue = await AsyncStorage.getItem(key);
-    console.log(jsonValue);
     return jsonValue != null ? JSON.parse(jsonValue) : undefined;
   } catch (e) {
     // saving error
-    console.log(e);
   }
 }

@@ -7,10 +7,8 @@ class PlayListContainer extends Container {
   };
 
   setPlayList = (playlist) => {
-    // console.log(playlist);
     this.setState({playlist: playlist}, () => {
       // do something with new state
-      console.log('done', this.state.playlist.length);
     });
   };
 

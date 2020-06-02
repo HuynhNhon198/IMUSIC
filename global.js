@@ -5,4 +5,7 @@ module.exports = {
   playlist_name: '',
   currentQueue: [],
   current_queue_name: '',
+  repeat: false,
+  track_repeat: '',
+  user: undefined,
 };

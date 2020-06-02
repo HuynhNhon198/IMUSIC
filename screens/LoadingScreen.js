@@ -5,14 +5,21 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import * as firebase from 'firebase';
-
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import GLOBAL from '../global.js';
 export default class LoadingScreen extends Component {
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
-      setTimeout(() => {
-        this.props.navigation.navigate(user ? 'App' : 'Auth');
-      }, 1500);
+    auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        GLOBAL.user = (
+          await firestore().collection('users').doc(user.uid).get()
+        ).data();
+        GLOBAL.user.favorite_songs = GLOBAL.user.favorite_songs || [];
+        this.props.navigation.navigate('App');
+      } else {
+        this.props.navigation.navigate('Auth');
+      }
     });
   }
 
