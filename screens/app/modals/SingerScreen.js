@@ -29,9 +29,9 @@ export default class SingerScreen extends Component {
   alias = this.props.navigation.state.params.alias;
 
   async componentDidMount() {
-    const url = `https://echo.brandly.vn/api/media/artist/${this.alias}/songs`;
+    const url = `https://tuhoc247.com/crawler/get-artist/${this.alias}`;
     getData(url).then((data) => {
-      if (data) {
+      if (data.code === 'success') {
         if (
           data.cover ===
           '//static-zmp3.zadn.vn/dev/skins/zmp3-v5.2/images/default_cover.png'
@@ -39,15 +39,15 @@ export default class SingerScreen extends Component {
           data.cover =
             'https://ak.picdn.net/shutterstock/videos/33557143/thumb/1.jpg';
         }
-        this.setState({info: data});
+        this.setState({info: data.message});
       }
     });
   }
 
   getPlayList = () => {
     return {
-      name: this.state.info.artistName,
-      list: this.state.info.songs.map(
+      name: this.state.info.name,
+      list: this.state.info.items.map(
         (x) =>
           new Object({
             id: x.id,
@@ -60,8 +60,8 @@ export default class SingerScreen extends Component {
 
   async playRandom() {
     await storeStorage('playlistOnline', this.getPlayList());
-    const {id, alias} = this.state.items[0];
-    trackService.playSongFromURL(id, alias, this.name);
+    const {id, alias} = this.state.info.items[0];
+    trackService.playSongFromURL(id, alias, this.state.info.name);
   }
   render() {
     return this.state.info ? (
@@ -82,9 +82,7 @@ export default class SingerScreen extends Component {
               size={30}
               onPress={() => this.props.navigation.goBack()}
             />
-            <Text style={styles.titleDiscovery}>
-              {this.state.info.artistName}
-            </Text>
+            <Text style={styles.titleDiscovery}>{this.state.info.name}</Text>
           </View>
         </ImageBackground>
         <View style={styles.listContainer}>
@@ -100,13 +98,13 @@ export default class SingerScreen extends Component {
               marginTop: -100,
               marginBottom: 20,
             }}
-            source={{uri: this.state.info.avatar}}
+            source={{uri: this.state.info.thumb}}
           />
           <ScrollView
             ref={(ref) => {
               this.scrollListReftop = ref;
             }}>
-            {this.state.info.songs.map((song, index) => {
+            {this.state.info.items.map((song, index) => {
               return (
                 <TouchableOpacity key={index} style={styles.song}>
                   <SongItem song={song} playList={this.getPlayList()} />

@@ -7,6 +7,7 @@ import {
   Dimensions,
   ActivityIndicator,
   ScrollView,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
@@ -29,10 +30,11 @@ export default class SearchBox extends Component {
     if (text.length > 0) {
       this.setState({loading: true});
       const data = await getData(
-        'https://echo.brandly.vn/api/media/search?term=' + text,
+        'https://ac.mp3.zing.vn/complete/desktop?type=song&num=10&query=' +
+          text,
       );
-      if (data && data.data) {
-        this.setState({result: data.data.song});
+      if (data && data.data[1] && data.data[1].song) {
+        this.setState({result: data.data[1].song});
         this.setState({loading: false});
       }
     } else {
@@ -73,7 +75,7 @@ export default class SearchBox extends Component {
               value={this.state.inputTextValue}
               onChangeText={(text) => this.search(text)}
               autoFocus
-              autoCapitalize
+              autoCapitalize="sentences"
               placeholder="Tìm Kiếm Bài Hát"
             />
           </View>
@@ -107,11 +109,15 @@ export default class SearchBox extends Component {
                       key={index}
                       style={styles.song}
                       onPress={() => this.openSong(song.id, song.alias)}>
-                      <Icon
-                        style={{alignSelf: 'center'}}
-                        name="music"
-                        size={24}
-                        color="#E9446A"
+                      <Image
+                        style={{width: 40, height: 40, borderRadius: 6}}
+                        source={
+                          song.thumb
+                            ? {
+                                uri: `https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/${song.thumb}`,
+                              }
+                            : require('../assets/cover-song.png')
+                        }
                       />
                       <View style={styles.songInfo}>
                         <Text
@@ -119,12 +125,11 @@ export default class SearchBox extends Component {
                             fontFamily: 'barlow-semibold',
                             fontSize: 17,
                             color: '#3e3e3e',
+                            width: 240,
                           }}>
-                          {song.title}
+                          {song.name}
                         </Text>
-                        <Text style={{color: '#888'}}>
-                          {song.artists_names}
-                        </Text>
+                        <Text style={{color: '#888'}}>{song.artist}</Text>
                       </View>
                     </TouchableOpacity>
                   );

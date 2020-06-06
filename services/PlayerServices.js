@@ -41,12 +41,12 @@ class TrackService {
   }
 
   getSongFromServer(id, alias) {
-    const url = `https://echo.brandly.vn/api/media/song?name=${alias}&id=${id}`;
+    const url = `https://tuhoc247.com/crawler/get-song?alias=${alias}&id=${id}`;
     return new Promise((r, j) => {
       getData(url).then(async (data) => {
-        if (data.data) {
-          const info = data.data;
-          if (info.streaming.default) {
+        if (data.code === 'success') {
+          const info = data.message.data;
+          if (info) {
             r(info);
           } else {
             r(null);
@@ -102,10 +102,10 @@ class TrackService {
   getInfoOfServerToSave(song) {
     return {
       id: song.id,
-      url: 'https:' + song.streaming.default['128'],
+      url: `http://api.mp3.zing.vn/api/streaming/audio/${song.id}/128`,
       title: song.title,
       artist: song.artists_names,
-      artwork: song.thumbnail_medium,
+      artwork: song.thumbnail.replace('w94_r1x1', 'w500_r1x1'),
       duration: song.duration,
       alias: song.alias,
     };
@@ -116,21 +116,27 @@ class TrackService {
   async saveNextToQueue(current_id, typeName, i) {
     this.current_idi = current_id;
     const ind = GLOBAL.current_list.findIndex((x) => x.id === current_id);
-    const next = GLOBAL.current_list[ind + (i ? i : 1)];
-    if (next) {
-      const check = await this.checkSongInQueue(next.id);
-      if (!check) {
-        let song = await this.getSongFromServer(next.id, next.alias);
-        if (song) {
-          song = this.getInfoOfServerToSave(song);
-          await this.addSongToQueue(song, typeName);
-          this.inG = 1;
-          return true;
-        } else if (song === null) {
-          this.inG += 1;
-          await this.saveNextToQueue(current_id, typeName, this.inG);
+    if (ind > -1) {
+      const next = GLOBAL.current_list[ind + (i ? i : 1)];
+      if (next) {
+        const check = await this.checkSongInQueue(next.id);
+        if (!check) {
+          let song = await this.getSongFromServer(next.id, next.alias);
+          if (song) {
+            song = this.getInfoOfServerToSave(song);
+            await this.addSongToQueue(song, typeName);
+            this.inG = 1;
+            return true;
+          } else if (song === null) {
+            this.inG += 1;
+            await this.saveNextToQueue(current_id, typeName, this.inG);
+          }
         }
+      } else {
+        await this.saveNextToQueue(GLOBAL.current_list[0].id, typeName, 1);
       }
+    } else {
+      await this.saveNextToQueue(GLOBAL.current_list[0].id, typeName, 1);
     }
     return;
   }

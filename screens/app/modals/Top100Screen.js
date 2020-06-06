@@ -31,18 +31,18 @@ export default class Top100Screen extends Component {
   async componentDidMount() {
     let url = '';
     switch (this.state.type) {
-      case '1':
-        url = 'https://echo.brandly.vn/api/media/top100/ZWZB96AB?page=1';
+      case '3':
+        url = 'https://tuhoc247.com/crawler/top100?type=usuk';
         this.img = require('../../../assets/discover1.png');
         this.name = 'TOP 100 Nhạc US-UK';
         break;
       case '2':
-        url = 'https://echo.brandly.vn/api/media/top100/ZWZB96DC?page=1';
+        url = 'https://tuhoc247.com/crawler/top100?type=kpop';
         this.img = require('../../../assets/discover2.png');
         this.name = 'TOP 100 Nhạc KPop';
         break;
-      case '3':
-        url = 'https://echo.brandly.vn/api/media/top100/ZWZB969E?page=1';
+      case '1':
+        url = 'https://tuhoc247.com/crawler/top100?type=vpop';
         this.img = require('../../../assets/discover3.png');
         this.name = 'TOP 100 Nhạc VPop';
         break;
@@ -50,9 +50,11 @@ export default class Top100Screen extends Component {
         break;
     }
     getData(url).then((data) => {
-      if (data.data) {
+      // console.log(data);
+      if (data.code === 'success') {
+        console.log(data.message.data.items);
         this.setState({
-          items: data.data.items,
+          items: data.message.data.items,
         });
       }
     });

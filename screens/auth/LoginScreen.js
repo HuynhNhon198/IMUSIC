@@ -41,7 +41,7 @@ export default class LoginScreen extends Component {
     const user = await auth().signInWithCredential(googleCredential);
 
     const {uid, displayName, photoURL, email} = user.user;
-    firestore().collection('users').doc(user.user.uid).set(
+    await firestore().collection('users').doc(user.user.uid).set(
       {
         uid,
         displayName,
@@ -52,6 +52,7 @@ export default class LoginScreen extends Component {
         merge: true,
       },
     );
+    // alert(`Xin Chào ${displayName}`);
   };
 
   render() {

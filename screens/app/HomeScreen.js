@@ -32,9 +32,9 @@ export default class HomeScreen extends Component {
       entries_discovery: [
         {
           key: '1',
-          name: 'US-UK',
-          desc: '100 Bài hát tổng hợp hay nhất',
-          img: require('../../assets/discover1.png'),
+          name: 'V-Pop',
+          desc: '100 Bài nhạc Việt hay nhất',
+          img: require('../../assets/discover3.png'),
         },
         {
           key: '2',
@@ -44,9 +44,9 @@ export default class HomeScreen extends Component {
         },
         {
           key: '3',
-          name: 'V-Pop',
-          desc: '100 Bài nhạc Việt hay nhất',
-          img: require('../../assets/discover3.png'),
+          name: 'US-UK',
+          desc: '100 Bài hát tổng hợp hay nhất',
+          img: require('../../assets/discover1.png'),
         },
       ],
       sections: [
@@ -90,15 +90,19 @@ export default class HomeScreen extends Component {
     //   const pl = new PlayListContainer();
     //   pl.setPlayList(data);
     // }
-    axios
-      .get('https://echo.brandly.vn/api/media/artists/default')
-      .then((res) => {
-        if (res.data && res.data.origins) {
-          const artists = res.data.origins;
-          artists.length = 3;
-          this.setState({artists});
-        }
-      });
+    // axios.get('https://tuhoc247.com/crawler/get-artists').then((res) => {
+    //   if (res.data) {
+    //     console.log();
+
+    //   }
+    // });
+    const res = await fetch('https://tuhoc247.com/crawler/get-artists');
+    res.json().then((data) => {
+      if (data.code === 'success') {
+        const artists = data.message;
+        this.setState({artists});
+      }
+    });
   }
 
   _renderDiscover = (rowData) => {

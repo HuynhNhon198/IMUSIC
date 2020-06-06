@@ -21,7 +21,7 @@ export default class ArtistList extends Component {
                 style={{width: 110, marginRight: 20}}
                 onPress={() =>
                   this.props.navi.navigate('Singer', {
-                    alias: artist.link.replace('/nghe-si/', ''),
+                    alias: artist.alias,
                   })
                 }>
                 <Image
