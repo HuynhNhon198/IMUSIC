@@ -1,3 +1,4 @@
+/* eslint-disable no-new-object */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -9,7 +10,46 @@ import {
 } from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Feather';
+import MusicFiles from 'react-native-get-music-files';
+import Permissions from 'react-native-permissions';
+
 export default class MyLocalSong extends Component {
+  state = {
+    storagePermission: '',
+    tracks: [],
+  };
+  convertToTimeView(sec) {
+    const quotient = Math.floor(sec / 60);
+    const remainder = sec % 60;
+    const newRemainder = remainder < 10 ? '0' + remainder : remainder;
+    return `${quotient}:${newRemainder}`;
+  }
+  componentDidMount() {
+    Permissions.request('storage').then((response) => {
+      this.setState({storagePermission: response});
+    });
+
+    MusicFiles.getAll({})
+      .then((trks) => {
+        this.setState({
+          tracks: trks.map(
+            (x, i) =>
+              new Object({
+                id: i,
+                url: x.path,
+                title: x.fileName.replace('.mp3', ''),
+                artist: 'Unknown',
+                artwork: '../assets/cover-song.png',
+                duration: x.duration,
+              }),
+          ),
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   songs = [
     {
       name: 'Có tất cả nhưng thiếu em',
@@ -91,30 +131,22 @@ export default class MyLocalSong extends Component {
             <Text>PHÁT NGẪU NHIÊN</Text>
           </ButtonPlayRandom>
           <ListContainer>
-            {this.songs.map((song, index) => {
+            {this.state.tracks.map((song, index) => {
               return (
                 <Song key={index}>
                   <Image
                     style={{width: 50, height: 50, borderRadius: 6}}
-                    source={{uri: song.cover}}
+                    source={require('../../../assets/cover-song.png')}
                   />
                   <SongInfo>
                     <View>
                       <Text dark main_title>
-                        {song.name}
+                        {song.title}
                       </Text>
                       <Text dark singer>
-                        {song.singer}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'flex-end',
-                      }}>
-                      <Text dark timer>
-                        {song.time}
+                        {this.convertToTimeView(
+                          Math.floor(song.duration / 1000),
+                        )}
                       </Text>
                     </View>
                   </SongInfo>

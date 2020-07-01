@@ -4,12 +4,9 @@ import {View, StyleSheet} from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createAppContainer, createSwitchNavigator} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import GLOBAL from './global.js';
-
 // import * as firebase from 'firebase';
 // import 'firebase/firestore';
 import firebase from '@react-native-firebase/app';
-import auth from '@react-native-firebase/auth';
 import HomeScreen from './screens/app/HomeScreen';
 import ProfileScreen from './screens/app/ProfileScreen';
 import Top100Screen from './screens/app/modals/Top100Screen';
@@ -44,6 +41,7 @@ firebase.initializeApp(firebaseConfig);
 //   }
 // });
 // TrackPlayer.getInstance();
+
 const AppContainer = createStackNavigator(
   {
     default: createBottomTabNavigator(
@@ -60,7 +58,7 @@ const AppContainer = createStackNavigator(
         Play: {
           screen: HomeScreen,
           navigationOptions: {
-            tabBarIcon: ({tintColor}) => (
+            tabBarIcon: () => (
               <View style={styles.iconCenter}>
                 <Icon name="activity" size={25} color="#fff" />
               </View>

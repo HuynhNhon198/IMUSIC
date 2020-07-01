@@ -78,7 +78,7 @@ export default class SongItem extends Component {
               style={{
                 width: 200,
                 fontFamily: 'barlow-semibold',
-                fontSize: 20,
+                fontSize: 16,
                 marginBottom: 5,
                 color: '#474747',
               }}

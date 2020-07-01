@@ -32,17 +32,20 @@ export default class Top100Screen extends Component {
     let url = '';
     switch (this.state.type) {
       case '3':
-        url = 'https://tuhoc247.com/crawler/top100?type=usuk';
+        url =
+          'https://mp3.zing.vn/xhr/media/get-list?op=top100&id=ZWZB96AB&length=100&start=0';
         this.img = require('../../../assets/discover1.png');
         this.name = 'TOP 100 Nhạc US-UK';
         break;
       case '2':
-        url = 'https://tuhoc247.com/crawler/top100?type=kpop';
+        url =
+          'https://mp3.zing.vn/xhr/media/get-list?op=top100&id=ZWZB96DC&length=100&start=0';
         this.img = require('../../../assets/discover2.png');
         this.name = 'TOP 100 Nhạc KPop';
         break;
       case '1':
-        url = 'https://tuhoc247.com/crawler/top100?type=vpop';
+        url =
+          'https://mp3.zing.vn/xhr/media/get-list?op=top100&id=ZWZB969E&length=100&start=0';
         this.img = require('../../../assets/discover3.png');
         this.name = 'TOP 100 Nhạc VPop';
         break;
@@ -50,11 +53,9 @@ export default class Top100Screen extends Component {
         break;
     }
     getData(url).then((data) => {
-      // console.log(data);
-      if (data.code === 'success') {
-        console.log(data.message.data.items);
+      if (data && data.msg === 'Success') {
         this.setState({
-          items: data.message.data.items,
+          items: data.data.items,
         });
       }
     });

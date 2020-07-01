@@ -1,13 +1,13 @@
+/* eslint-disable no-alert */
 // /* eslint-disable no-alert */
-import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import GLOBAL from '../global.js';
 
 export async function getData(url) {
-  const data = await axios.get(url).catch((err) => {
-    // alert(err);
+  const res = await fetch(url).catch((err) => {
+    alert(err);
   });
-  return data?.data || undefined;
+  return (await res?.json()) || undefined;
 }
 
 export async function createMiliSec() {

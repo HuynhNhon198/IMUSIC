@@ -13,7 +13,6 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import axios from 'axios';
 import Icon from 'react-native-vector-icons/Feather';
 import ArtistList from '../../components/ArtistList';
 import {YellowBox} from 'react-native';

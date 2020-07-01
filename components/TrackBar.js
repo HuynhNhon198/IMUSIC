@@ -14,11 +14,12 @@ import {
 import {getStorage, storeStorage} from '../services/helper';
 import SlidingUpPanel from 'rn-sliding-up-panel';
 import PlayerScreen from '../screens/app/modals/PlayerScreen';
-
 import TrackPlayer from 'react-native-track-player';
 import trackService from '../services/PlayerServices';
 import GLOBAL, {current_queue_name} from '../global.js';
 import ProgressBarComponent from './Progress';
+import {map, filter} from 'rxjs/operators';
+import {accelerometer} from 'react-native-sensors';
 export default class TrackBar extends Component {
   constructor(props) {
     super(props);
@@ -57,6 +58,9 @@ export default class TrackBar extends Component {
       }
     });
 
+    // accelerometer.subscribe(({x, y, z, timestamp}) =>
+    //   console.log({x, y, z, timestamp}),
+    // );
     this.onTrackChange = TrackPlayer.addEventListener(
       'playback-track-changed',
       async (data) => {
@@ -71,6 +75,36 @@ export default class TrackBar extends Component {
             trackService.saveNextToQueue(track.id, current_queue_name, 1);
             storeStorage('currentSong', track);
             this.setState({current_song: track});
+            const SHAKE_THRESHOLD = 26;
+            console.log('listenning', SHAKE_THRESHOLD);
+            const MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
+            this.lastShakeTime = 0;
+
+            this.accelerometerSubscription = accelerometer
+              .pipe(
+                map(
+                  ({x, y, z}) =>
+                    Math.sqrt(
+                      Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2),
+                    ) /* - SensorManager.GRAVITY_EARTH */,
+                ),
+                filter((acceleration) => {
+                  // console.log(acceleration, SHAKE_THRESHOLD);
+                  return acceleration > SHAKE_THRESHOLD;
+                }),
+              )
+              .subscribe((acceleration) => {
+                const curTime = new Date().getTime();
+                // console.log(curTime, this.lastShakeTime);
+                if (
+                  curTime - this.lastShakeTime >
+                  MIN_TIME_BETWEEN_SHAKES_MILLISECS
+                ) {
+                  this.lastShakeTime = curTime;
+                  console.log('Shaked device! acceleration: ', acceleration);
+                  trackService.actionTrack('previous');
+                }
+              });
           }
         } else {
         }
@@ -81,6 +115,7 @@ export default class TrackBar extends Component {
   componentWillUnmount() {
     // Removes the event handler
     this.onTrackChange.remove();
+    this.accelerometerSubscription.unsubscribe();
   }
 
   hideMethod = () => {};
