@@ -1,6 +1,6 @@
 /* eslint-disable no-alert */
-import TrackPlayer, {usePlaybackState} from 'react-native-track-player';
-import {getStorage, storeStorage, getData} from './helper';
+import TrackPlayer from 'react-native-track-player';
+import {getStorage, storeStorage, getData, startTrackNoty} from './helper';
 import GLOBAL from '../global.js';
 class TrackService {
   async setup() {
@@ -159,6 +159,7 @@ class TrackService {
         await TrackPlayer.add(queues.queues);
         await TrackPlayer.skip(id);
         await TrackPlayer.play();
+        startTrackNoty(song.title);
         GLOBAL.current_queue_name = typeName;
         await storeStorage('currentSong', song);
         return true;

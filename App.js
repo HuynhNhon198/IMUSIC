@@ -44,49 +44,55 @@ firebase.initializeApp(firebaseConfig);
 
 const AppContainer = createStackNavigator(
   {
-    default: createBottomTabNavigator(
-      {
-        Home: {
-          screen: HomeScreen,
-          navigationOptions: {
-            tabBarIcon: ({tintColor}) => (
-              <Icon name="music" size={25} color={tintColor} />
-            ),
-            headerShown: false,
-          },
-        },
-        Play: {
-          screen: HomeScreen,
-          navigationOptions: {
-            tabBarIcon: () => (
-              <View style={styles.iconCenter}>
-                <Icon name="activity" size={25} color="#fff" />
-              </View>
-            ),
-            headerShown: false,
-          },
-        },
-        Profile: {
-          screen: ProfileScreen,
-          navigationOptions: {
-            tabBarIcon: ({tintColor}) => (
-              <Icon name="user" size={25} color={tintColor} />
-            ),
-            headerShown: false,
-          },
-        },
-      },
-      {
-        tabBarOptions: {
-          showLabel: false,
-          style: {
-            borderRadius: 5,
-            height: 80,
-            borderTopColor: '#EEE',
-          },
-        },
-      },
-    ),
+    // default: createBottomTabNavigator(
+    //   {
+    //     Home: {
+    //       screen: HomeScreen,
+    //       navigationOptions: {
+    //         tabBarIcon: ({tintColor}) => (
+    //           <Icon name="music" size={25} color={tintColor} />
+    //         ),
+    //         headerShown: false,
+    //       },
+    //     },
+    //     Play: {
+    //       screen: HomeScreen,
+    //       navigationOptions: {
+    //         tabBarIcon: () => (
+    //           <View style={styles.iconCenter}>
+    //             <Icon name="activity" size={25} color="#fff" />
+    //           </View>
+    //         ),
+    //         headerShown: false,
+    //       },
+    //     },
+    //     Profile: {
+    //       screen: ProfileScreen,
+    //       navigationOptions: {
+    //         tabBarIcon: ({tintColor}) => (
+    //           <Icon name="user" size={25} color={tintColor} />
+    //         ),
+    //         headerShown: false,
+    //       },
+    //     },
+    //   },
+    //   {
+    //     tabBarOptions: {
+    //       showLabel: false,
+    //       style: {
+    //         borderRadius: 5,
+    //         height: 80,
+    //         borderTopColor: '#EEE',
+    //       },
+    //     },
+    //   },
+    // ),
+    default: {
+      screen: HomeScreen,
+    },
+    Profile: {
+      screen: ProfileScreen,
+    },
     Top100: {
       screen: Top100Screen,
     },
@@ -107,6 +113,9 @@ const AppContainer = createStackNavigator(
     },
     Favorites: {
       screen: Favorites,
+    },
+    Home: {
+      screen: HomeScreen,
     },
   },
   {

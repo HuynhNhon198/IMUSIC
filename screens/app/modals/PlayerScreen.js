@@ -1,3 +1,4 @@
+/* eslint-disable react/no-string-refs */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
@@ -10,10 +11,12 @@ import {
   Animated,
   Easing,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import GLOBAL from '../../../global.js';
 import ActionPlayerbar from '../../../components/ActionPlayerbar';
+
 // import PlayListContainer from '../../../containers/playlistContainer';
 export default class PlayerScreen extends Component {
   constructor(props) {
@@ -84,7 +87,11 @@ export default class PlayerScreen extends Component {
             source={{uri: song.artwork}}
           />
           <ScrollView />
-          <ActionPlayerbar typeName={GLOBAL.current_queue_name} song={song} />
+          <ActionPlayerbar
+            navi={this.props.navi}
+            typeName={GLOBAL.current_queue_name}
+            song={song}
+          />
           {/* <PlayerBar typeName={GLOBAL.current_queue_name} song={song} /> */}
         </View>
       </View>
@@ -100,7 +107,8 @@ export default class PlayerScreen extends Component {
 const styles = new StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: -16,
+    marginTop: 2,
+    borderRadius: 40,
   },
   menuBar: {
     flexDirection: 'row',

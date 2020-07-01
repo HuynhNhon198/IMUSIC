@@ -7,11 +7,14 @@ import {
   Image,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import styled from 'styled-components';
 import Icon from 'react-native-vector-icons/Feather';
 import MusicFiles from 'react-native-get-music-files';
 import Permissions from 'react-native-permissions';
+import TrackPlayer from 'react-native-track-player';
+import {startTrackNoty} from '../../../services/helper';
 
 export default class MyLocalSong extends Component {
   state = {
@@ -35,12 +38,12 @@ export default class MyLocalSong extends Component {
           tracks: trks.map(
             (x, i) =>
               new Object({
-                id: i,
+                id: i.toString(),
                 url: x.path,
                 title: x.fileName.replace('.mp3', ''),
                 artist: 'Unknown',
-                artwork: '../assets/cover-song.png',
-                duration: x.duration,
+                artwork: 'https://i.imgur.com/5MwRdOc.png',
+                duration: Math.floor(x.duration / 1000),
               }),
           ),
         });
@@ -50,60 +53,19 @@ export default class MyLocalSong extends Component {
       });
   }
 
-  songs = [
-    {
-      name: 'Có tất cả nhưng thiếu em',
-      singer: 'Erik',
-      cover: 'https://i1.sndcdn.com/artworks-000573867131-n0z3pd-t500x500.jpg',
-      time: '3:21',
-    },
-    {
-      name: 'Có em nhưng thiếu tất cả',
-      singer: 'Karik',
-      cover:
-        'https://d2tml28x3t0b85.cloudfront.net/tracks/audio/original_artwork/1c076940e73911e8b0ed5909629489a2/1d40fab0e73911e889e067bd6812e100.jpg',
-      time: '4:01',
-    },
-    {
-      name: 'Có tiền nhưng thiếu em',
-      singer: 'Erik, Min',
-      cover: 'https://i1.sndcdn.com/artworks-000605216068-as8f7i-t500x500.jpg',
-      time: '3:41',
-    },
-    {
-      name: 'Không em, không tiền',
-      singer: 'Huin Nhọn',
-      cover:
-        'https://i0.wp.com/inc42.com/wp-content/uploads/2020/04/OTT-Music.jpg?fit=1360%2C1020&ssl=1',
-      time: '2:51',
-    },
-    {
-      name: 'Có tất cả nhưng thiếu em',
-      singer: 'Erik',
-      cover: 'https://i1.sndcdn.com/artworks-000573867131-n0z3pd-t500x500.jpg',
-      time: '3:21',
-    },
-    {
-      name: 'Có em nhưng thiếu tất cả',
-      singer: 'Karik',
-      cover:
-        'https://d2tml28x3t0b85.cloudfront.net/tracks/audio/original_artwork/1c076940e73911e8b0ed5909629489a2/1d40fab0e73911e889e067bd6812e100.jpg',
-      time: '4:01',
-    },
-    {
-      name: 'Có tiền nhưng thiếu em',
-      singer: 'Erik, Min',
-      cover: 'https://i1.sndcdn.com/artworks-000605216068-as8f7i-t500x500.jpg',
-      time: '3:41',
-    },
-    {
-      name: 'Không em, không tiền',
-      singer: 'Huin Nhọn',
-      cover:
-        'https://i0.wp.com/inc42.com/wp-content/uploads/2020/04/OTT-Music.jpg?fit=1360%2C1020&ssl=1',
-      time: '2:51',
-    },
-  ];
+  async open(song) {
+    const new_q = [];
+    const current_q = await TrackPlayer.getQueue();
+    this.state.tracks.forEach((t) => {
+      if (current_q.findIndex((x) => x.id === t.id) === -1) {
+        new_q.push(t);
+      }
+    });
+    TrackPlayer.add(new_q, null);
+    TrackPlayer.skip(song.id);
+    TrackPlayer.play();
+    startTrackNoty(song.title);
+  }
 
   render() {
     return (
@@ -130,30 +92,35 @@ export default class MyLocalSong extends Component {
           <ButtonPlayRandom>
             <Text>PHÁT NGẪU NHIÊN</Text>
           </ButtonPlayRandom>
-          <ListContainer>
-            {this.state.tracks.map((song, index) => {
-              return (
-                <Song key={index}>
-                  <Image
-                    style={{width: 50, height: 50, borderRadius: 6}}
-                    source={require('../../../assets/cover-song.png')}
-                  />
-                  <SongInfo>
-                    <View>
-                      <Text dark main_title>
-                        {song.title}
-                      </Text>
-                      <Text dark singer>
-                        {this.convertToTimeView(
-                          Math.floor(song.duration / 1000),
-                        )}
-                      </Text>
-                    </View>
-                  </SongInfo>
-                </Song>
-              );
-            })}
-          </ListContainer>
+          {this.state.tracks.length > 0 ? (
+            <ListContainer>
+              {this.state.tracks.map((song, index) => {
+                return (
+                  <Song key={index} onPress={() => this.open(song)}>
+                    <Image
+                      style={{width: 50, height: 50, borderRadius: 6}}
+                      source={require('../../../assets/cover-song.png')}
+                    />
+                    <SongInfo>
+                      <View>
+                        <Text dark main_title>
+                          {song.title}
+                        </Text>
+                        <Text dark singer>
+                          {this.convertToTimeView(song.duration)}
+                        </Text>
+                      </View>
+                    </SongInfo>
+                  </Song>
+                );
+              })}
+            </ListContainer>
+          ) : (
+            <ActivityIndicator
+              style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}
+              size="large"
+            />
+          )}
         </ListMain>
       </Container>
     );

@@ -49,11 +49,11 @@ export default class TrackBar extends Component {
     this.animte = this.animatedValue.addListener(({value}) => {
       if (value === this.draggableRange.top) {
         // At top position
-        this.setState({px: 13});
+        this.setState({px: 26});
       }
 
       if (value === this.draggableRange.bottom) {
-        this.setState({px: -13});
+        this.setState({px: -26});
         // At bottom position
       }
     });
@@ -75,36 +75,37 @@ export default class TrackBar extends Component {
             trackService.saveNextToQueue(track.id, current_queue_name, 1);
             storeStorage('currentSong', track);
             this.setState({current_song: track});
-            const SHAKE_THRESHOLD = 26;
-            console.log('listenning', SHAKE_THRESHOLD);
-            const MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
-            this.lastShakeTime = 0;
 
-            this.accelerometerSubscription = accelerometer
-              .pipe(
-                map(
-                  ({x, y, z}) =>
-                    Math.sqrt(
-                      Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2),
-                    ) /* - SensorManager.GRAVITY_EARTH */,
-                ),
-                filter((acceleration) => {
-                  // console.log(acceleration, SHAKE_THRESHOLD);
-                  return acceleration > SHAKE_THRESHOLD;
-                }),
-              )
-              .subscribe((acceleration) => {
-                const curTime = new Date().getTime();
-                // console.log(curTime, this.lastShakeTime);
-                if (
-                  curTime - this.lastShakeTime >
-                  MIN_TIME_BETWEEN_SHAKES_MILLISECS
-                ) {
-                  this.lastShakeTime = curTime;
-                  console.log('Shaked device! acceleration: ', acceleration);
-                  trackService.actionTrack('previous');
-                }
-              });
+            // const SHAKE_THRESHOLD = 26;
+            // console.log('listenning', SHAKE_THRESHOLD);
+            // const MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
+            // this.lastShakeTime = 0;
+
+            // this.accelerometerSubscription = accelerometer
+            //   .pipe(
+            //     map(
+            //       ({x, y, z}) =>
+            //         Math.sqrt(
+            //           Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2),
+            //         ) /* - SensorManager.GRAVITY_EARTH */,
+            //     ),
+            //     filter((acceleration) => {
+            //       // console.log(acceleration, SHAKE_THRESHOLD);
+            //       return acceleration > SHAKE_THRESHOLD;
+            //     }),
+            //   )
+            //   .subscribe((acceleration) => {
+            //     const curTime = new Date().getTime();
+            //     // console.log(curTime, this.lastShakeTime);
+            //     if (
+            //       curTime - this.lastShakeTime >
+            //       MIN_TIME_BETWEEN_SHAKES_MILLISECS
+            //     ) {
+            //       this.lastShakeTime = curTime;
+            //       console.log('Shaked device! acceleration: ', acceleration);
+            //       trackService.actionTrack('previous');
+            //     }
+            //   });
           }
         } else {
         }
@@ -115,7 +116,7 @@ export default class TrackBar extends Component {
   componentWillUnmount() {
     // Removes the event handler
     this.onTrackChange.remove();
-    this.accelerometerSubscription.unsubscribe();
+    // this.accelerometerSubscription.unsubscribe();
   }
 
   hideMethod = () => {};
@@ -161,7 +162,11 @@ export default class TrackBar extends Component {
           draggableRange={this.draggableRange}
           showBackdrop={false}
           ref={(c) => (this._panel = c)}>
-          <PlayerScreen song={song} hideMethod={() => this._panel.hide()} />
+          <PlayerScreen
+            navi={this.props.navi}
+            song={song}
+            hideMethod={() => this._panel.hide()}
+          />
         </SlidingUpPanel>
       </View>
     ) : (

@@ -15,7 +15,7 @@ import {
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import GLOBAL from '../../global.js';
-
+import Share from 'react-native-share';
 import Icon from 'react-native-vector-icons/Feather';
 export default class ProfileScreen extends Component {
   _isMounted = false;
@@ -40,16 +40,30 @@ export default class ProfileScreen extends Component {
       case '4':
         this.props.navigation.navigate('YtbMp3');
         break;
+      case '3':
+        this.props.navigation.goBack();
+        break;
       case '7':
         this.signOut();
         break;
-
+      case '6':
+        Share.shareSingle({
+          social: Share.Social.EMAIL,
+          subject: 'Yêu cầu hỗ trợ cho IMUSIC',
+          mailto: 'huynhnhon.dev@gmail.com',
+        });
+        break;
       default:
         break;
     }
   }
 
   options = [
+    {
+      id: '3',
+      name: 'Trang Chủ',
+      icon: 'home',
+    },
     {
       id: '1',
       name: 'Nhạc của tôi',
@@ -61,19 +75,9 @@ export default class ProfileScreen extends Component {
       icon: 'heart',
     },
     {
-      id: '3',
-      name: 'Kết nối',
-      icon: 'message-square',
-    },
-    {
       id: '4',
       name: 'Tải nhạc Youtube',
       icon: 'youtube',
-    },
-    {
-      id: '5',
-      name: 'Cài đặt chung',
-      icon: 'sliders',
     },
     {
       id: '6',

@@ -7,7 +7,7 @@ import trackService from '../services/PlayerServices';
 import GLOBAL, {current_queue_name} from '../global.js';
 import ProgressBarComponent from './Progress';
 import firestoreService from '../services/FirestoreService';
-
+import {navigation} from 'react-navigation';
 export default class ActionPlayerbar extends Component {
   constructor(props) {
     super(props);
@@ -149,7 +149,7 @@ export default class ActionPlayerbar extends Component {
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buttonAction]}
-            onPress={() => trackService.actionTrack('previous')}>
+            onPress={() => this.props.navi.navigate('Playlist')}>
             <Icon name="list" size={23} />
           </TouchableOpacity>
         </View>

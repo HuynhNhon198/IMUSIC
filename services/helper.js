@@ -2,6 +2,14 @@
 // /* eslint-disable no-alert */
 import AsyncStorage from '@react-native-community/async-storage';
 import GLOBAL from '../global.js';
+import Snackbar from 'react-native-snackbar';
+
+export function startTrackNoty(name) {
+  Snackbar.show({
+    text: `Đang phát ${name}`,
+    duration: Snackbar.LENGTH_SHORT,
+  });
+}
 
 export async function getData(url) {
   const res = await fetch(url).catch((err) => {

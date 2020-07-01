@@ -12,6 +12,7 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import ArtistList from '../../components/ArtistList';
@@ -21,6 +22,7 @@ import GLOBAL from '../../global.js';
 import {getStorage} from '../../services/helper';
 import Modal from 'react-native-modalbox';
 import SearchBox from '../../components/SearchBox';
+import auth from '@react-native-firebase/auth';
 
 StatusBar.setBarStyle('dark-content', true);
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
@@ -28,6 +30,9 @@ export default class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      email: '',
+      displayName: '',
+      photoURL: 'https://reactnative.dev/docs/assets/p_cat2.png',
       entries_discovery: [
         {
           key: '1',
@@ -84,17 +89,13 @@ export default class HomeScreen extends Component {
   }
 
   async componentDidMount() {
-    // const data = await getStorage('playlistOnline');
-    // if (data !== null) {
-    //   const pl = new PlayListContainer();
-    //   pl.setPlayList(data);
-    // }
-    // axios.get('https://tuhoc247.com/crawler/get-artists').then((res) => {
-    //   if (res.data) {
-    //     console.log();
+    auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        const {email, displayName, photoURL} = GLOBAL.user;
+        this.setState({email, displayName, photoURL});
+      }
+    });
 
-    //   }
-    // });
     const res = await fetch('https://tuhoc247.com/crawler/get-artists');
     res.json().then((data) => {
       if (data.code === 'success') {
@@ -156,12 +157,32 @@ export default class HomeScreen extends Component {
           />
         </View>
         <View style={{flex: 1, paddingLeft: 24}}>
-          <ScrollView>
-            <View style={styles.topBar}>
-              <Text style={styles.section}>Top 100</Text>
+          <ScrollView style={{paddingBottom: 10}}>
+            <View style={[styles.header]}>
+              <TouchableOpacity
+                style={{flexDirection: 'row'}}
+                onPress={() => this.props.navigation.navigate('Profile')}>
+                <Image
+                  style={{width: 40, height: 40, borderRadius: 40}}
+                  source={{uri: this.state.photoURL}}
+                />
+                <View
+                  style={{
+                    marginHorizontal: 10,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text style={{fontSize: 20}}>Huynh Nhọn</Text>
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => this.refs.modal6.open()}>
                 <Icon name="search" size={24} />
               </TouchableOpacity>
+            </View>
+          </ScrollView>
+          <ScrollView>
+            <View style={styles.topBar}>
+              <Text style={styles.section}>Top 100</Text>
             </View>
             <View>
               <FlatList
@@ -203,7 +224,7 @@ export default class HomeScreen extends Component {
           </ScrollView>
         </View>
         <View>
-          <TrackBar />
+          <TrackBar navi={this.props.navigation} />
         </View>
         <Modal
           style={[styles.modal]}
@@ -226,6 +247,18 @@ const styles = new StyleSheet.create({
   },
   StatusBar: {
     height: StatusBar.currentHeight,
+  },
+  header: {
+    borderBottomColor: '#E9446A',
+    borderBottomWidth: 1,
+    marginRight: 24,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: 20,
+    marginTop: 20,
+    borderStyle: 'dashed',
   },
   topBar: {
     paddingRight: 24,
