@@ -249,7 +249,7 @@ const styles = new StyleSheet.create({
     height: StatusBar.currentHeight,
   },
   header: {
-    borderBottomColor: '#E9446A',
+    borderBottomColor: '#eee',
     borderBottomWidth: 1,
     marginRight: 24,
     flex: 1,

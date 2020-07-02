@@ -7,6 +7,7 @@ import {
   Image,
   PermissionsAndroid,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Feather';
@@ -70,7 +71,7 @@ export default class YoutubeMp3 extends Component {
   }
 
   async retrieveInfo(text) {
-    this.setState({info: undefined});
+    this.setState({info: ''});
     this.setState({status: ''});
     var regex = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/;
     if (regex.test(text)) {
@@ -116,7 +117,7 @@ export default class YoutubeMp3 extends Component {
           />
 
           <View>
-            {info ? (
+            {info && info !== '' ? (
               <View style={styles.preview}>
                 <Icon
                   name="arrow-down"
@@ -158,6 +159,11 @@ export default class YoutubeMp3 extends Component {
                   <Text>{this.state.status}</Text>
                 </View>
               </View>
+            ) : info === '' ? (
+              <ActivityIndicator
+                style={{flex: 1, alignSelf: 'center', justifyContent: 'center'}}
+                size="large"
+              />
             ) : (
               <View />
             )}
